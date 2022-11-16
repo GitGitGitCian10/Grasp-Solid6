@@ -2,95 +2,26 @@ using System.Collections.Generic;
 
 namespace Full_GRASP_And_SOLID
 {
-    public class TimedRecipe : IRecipeContent, TimerClient // Modificado por DIP
+    public class TimedRecipe : IRecipeContent, TimerClient
     {
-        // Cambiado por OCP
-        private IList<BaseStep> steps = new List<BaseStep>();
+        public Recipe recipe;
 
-        public Product FinalProduct { get; set; }
+        public CountdownTimer countdownTimer;
 
-        private bool cooked = false;
-
-        private CountdownTimer countdownTimer;
-
-        public bool Cooked
+        public TimedRecipe(Recipe recipe)
         {
-            get
-            {
-                return cooked;
-            }
+            this.recipe = recipe;
+            countdownTimer.Register(recipe.GetCookTime(), this);
         }
 
-        // Agregado por Creator
-        public void AddStep(Product input, double quantity, Equipment equipment, int time)
-        {
-            Step step = new Step(input, quantity, equipment, time);
-            this.steps.Add(step);
-            countdownTimer.Register(GetCookTime(), this);
-        }
-
-        // Agregado por OCP y Creator
-        public void AddStep(string description, int time)
-        {
-            WaitStep step = new WaitStep(description, time);
-            this.steps.Add(step);
-            countdownTimer.Register(GetCookTime(), this);
-        }
-
-        public virtual void RemoveStep(BaseStep step)
-        {
-            this.steps.Remove(step);
-            countdownTimer.Register(GetCookTime(), this);
-        }
-
-        // Agregado por SRP
         public string GetTextToPrint()
         {
-            string result = $"Receta de {this.FinalProduct.Description}:\n";
-            foreach (BaseStep step in this.steps)
-            {
-                result = result + step.GetTextToPrint() + "\n";
-            }
-
-            // Agregado por Expert
-            result = result + $"Costo de producción: {this.GetProductionCost()}";
-
-            return result;
-        }
-
-        // Agregado por Expert
-        public double GetProductionCost()
-        {
-            double result = 0;
-
-            foreach (BaseStep step in this.steps)
-            {
-                result = result + step.GetStepCost();
-            }
-
-            return result;
-        }
-
-        public int GetCookTime()
-        {
-            int totalTime = 0;
-
-            foreach (BaseStep step in this.steps)
-            {
-                totalTime += step.Time;
-            }
-
-            return totalTime;
-        }
-
-        public void Cook()
-        {
-            cooked = true;
+            return recipe.GetTextToPrint();
         }
 
         public void TimeOut()
         {
-            Cook();
+            recipe.Cook();
         }
     }
 }
