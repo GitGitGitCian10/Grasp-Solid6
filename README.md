@@ -26,4 +26,4 @@ La clase ```Thread``` está definida en el espacio de nombres ```System.Threadin
 
 ️➡️ **Que patrón(es) o principio(s) has usado para esto?**
 
-Utilicé el ```OCD``` porque por definición no se podía modificar en mayor medida la clase ```Recipe```, entonces extendí su funcionamienot a través de ```Composición```.
+Utilicé el ```OCP``` porque por definición no se podía modificar en mayor medida la clase ```Recipe```, entonces extendí su funcionamiento a través de ```Composición```.
