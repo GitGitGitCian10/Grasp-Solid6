@@ -1,15 +1,8 @@
-//-------------------------------------------------------------------------
-// <copyright file="Recipe.cs" company="Universidad Católica del Uruguay">
-// Copyright (c) Programación II. Derechos reservados.
-// </copyright>
-//-------------------------------------------------------------------------
-
-using System;
 using System.Collections.Generic;
 
 namespace Full_GRASP_And_SOLID
 {
-    public class Recipe : IRecipeContent // Modificado por DIP
+    public class TimedRecipe : IRecipeContent, TimerClient // Modificado por DIP
     {
         // Cambiado por OCP
         private IList<BaseStep> steps = new List<BaseStep>();
@@ -17,6 +10,8 @@ namespace Full_GRASP_And_SOLID
         public Product FinalProduct { get; set; }
 
         private bool cooked = false;
+
+        private CountdownTimer countdownTimer;
 
         public bool Cooked
         {
@@ -31,6 +26,7 @@ namespace Full_GRASP_And_SOLID
         {
             Step step = new Step(input, quantity, equipment, time);
             this.steps.Add(step);
+            countdownTimer.Register(GetCookTime(), this);
         }
 
         // Agregado por OCP y Creator
@@ -38,11 +34,13 @@ namespace Full_GRASP_And_SOLID
         {
             WaitStep step = new WaitStep(description, time);
             this.steps.Add(step);
+            countdownTimer.Register(GetCookTime(), this);
         }
 
         public virtual void RemoveStep(BaseStep step)
         {
             this.steps.Remove(step);
+            countdownTimer.Register(GetCookTime(), this);
         }
 
         // Agregado por SRP
@@ -88,6 +86,11 @@ namespace Full_GRASP_And_SOLID
         public void Cook()
         {
             cooked = true;
+        }
+
+        public void TimeOut()
+        {
+            Cook();
         }
     }
 }
